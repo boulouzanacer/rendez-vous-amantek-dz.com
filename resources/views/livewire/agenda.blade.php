@@ -185,7 +185,7 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
         <div class="card overflow-hidden">
             <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-50 text-center text-xs font-semibold uppercase tracking-wide text-slate-500 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
                 @foreach (['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'] as $label)
-                    <div class="py-2.5">{{ $label }}</div>
+                    <div class="py-2 sm:py-2.5">{{ $label }}</div>
                 @endforeach
             </div>
 
@@ -197,7 +197,7 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
                     @endphp
 
                     <div @class([
-                        'min-h-[6.5rem] border-b border-r border-slate-100 p-1.5 dark:border-slate-800',
+                        'min-h-[4.5rem] border-b border-r border-slate-100 p-1 sm:min-h-[6.5rem] sm:p-1.5 dark:border-slate-800',
                         'bg-slate-50/60 dark:bg-slate-900/40' => ! $inMonth,
                         'bg-brand-50/40 dark:bg-brand-950/20' => $day->isToday(),
                     ])>

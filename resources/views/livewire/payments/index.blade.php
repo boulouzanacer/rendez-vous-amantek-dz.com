@@ -96,8 +96,35 @@ new #[Layout('layouts.app', ['title' => 'Paiements', 'subtitle' => 'Encaissement
     </div>
 
     {{-- Filtres --}}
-    <div class="card p-4">
-        <div class="grid gap-3 sm:grid-cols-3">
+    <div class="card p-4" x-data="{ filtersOpen: false }">
+        {{-- Barre mobile : accès aux filtres et action principale --}}
+        <div class="flex flex-wrap items-center justify-between gap-2 lg:hidden">
+            <button
+                type="button"
+                @click="filtersOpen = ! filtersOpen"
+                x-bind:aria-expanded="filtersOpen"
+                aria-controls="payments-filters"
+                class="btn-secondary btn-sm"
+            >
+                <x-icon name="filter" class="h-4 w-4" />
+                Filtres
+                @if ($hasFilters)
+                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+                @endif
+                <x-icon name="chevron-down" class="h-4 w-4 transition-transform duration-200" x-bind:class="filtersOpen && 'rotate-180'" />
+            </button>
+
+            <a href="{{ route('payments.create') }}" wire:navigate class="btn-primary btn-sm">
+                <x-icon name="plus" class="h-4 w-4" />
+                Nouveau paiement
+            </a>
+        </div>
+
+        <div
+            id="payments-filters"
+            class="mt-3 grid gap-3 max-lg:hidden sm:grid-cols-3 lg:mt-0"
+            x-bind:class="{ 'max-lg:!grid': filtersOpen }"
+        >
             <div>
                 <label class="label" for="search">Recherche</label>
                 <div class="relative">
@@ -146,7 +173,7 @@ new #[Layout('layouts.app', ['title' => 'Paiements', 'subtitle' => 'Encaissement
                     </button>
                 @endif
 
-                <a href="{{ route('payments.create') }}" wire:navigate class="btn-primary btn-sm">
+                <a href="{{ route('payments.create') }}" wire:navigate class="btn-primary btn-sm hidden lg:inline-flex">
                     <x-icon name="plus" class="h-4 w-4" />
                     Nouveau paiement
                 </a>
