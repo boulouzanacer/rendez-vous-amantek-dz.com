@@ -147,19 +147,23 @@
                 </nav>
 
                 <div class="border-t border-slate-200 p-3 dark:border-slate-800">
-                    <a
-                        href="{{ route('profile') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 rounded-lg px-3 py-2.5 transition hover:bg-slate-100 dark:hover:bg-slate-800"
-                    >
-                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
-                            {{ auth()->user()->initials() }}
-                        </span>
-                        <span class="min-w-0 flex-1">
-                            <span class="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">{{ auth()->user()->name }}</span>
-                            <span class="block truncate text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->role->label() }}</span>
-                        </span>
-                    </a>
+                    <div class="flex items-center gap-1">
+                        <a
+                            href="{{ route('profile') }}"
+                            wire:navigate
+                            class="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-3 py-2.5 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                                {{ auth()->user()->initials() }}
+                            </span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block truncate text-sm font-medium text-slate-800 dark:text-slate-100">{{ auth()->user()->name }}</span>
+                                <span class="block truncate text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->role->label() }}</span>
+                            </span>
+                        </a>
+
+                        @livewire('layout.logout')
+                    </div>
                 </div>
             </aside>
 

@@ -53,6 +53,7 @@ test('navigation menu can be rendered', function () {
     $response
         ->assertOk()
         ->assertSee('Tableau de bord')
+        ->assertSee('Se déconnecter')
         ->assertSee(config('company.name'));
 });
 
@@ -61,13 +62,13 @@ test('users can logout', function () {
 
     $this->actingAs($user);
 
-    $component = Volt::test('layout.navigation');
+    $component = Volt::test('layout.logout');
 
     $component->call('logout');
 
     $component
         ->assertHasNoErrors()
-        ->assertRedirect('/');
+        ->assertRedirect(route('login', absolute: false));
 
     $this->assertGuest();
 });
