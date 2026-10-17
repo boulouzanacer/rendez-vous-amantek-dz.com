@@ -8,7 +8,7 @@ use Livewire\Volt\Volt;
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('dashboard')
-        : view('welcome');
+        : redirect()->route('login');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
