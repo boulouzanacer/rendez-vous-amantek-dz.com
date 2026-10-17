@@ -49,7 +49,7 @@ new #[Layout('layouts.app', ['title' => 'Tableau de bord', 'subtitle' => 'Votre 
 
         $todayAppointments = Appointment::query()
             ->onDay($today)
-            ->with(['client', 'technician'])
+            ->with(['client', 'technician', 'technicians'])
             ->orderBy('scheduled_at')
             ->get();
 
@@ -57,7 +57,7 @@ new #[Layout('layouts.app', ['title' => 'Tableau de bord', 'subtitle' => 'Votre 
             ->open()
             ->where('scheduled_at', '>=', now())
             ->where('scheduled_at', '<=', now()->addDays(7)->endOfDay())
-            ->with(['client', 'technician'])
+            ->with(['client', 'technician', 'technicians'])
             ->orderBy('scheduled_at')
             ->limit(8)
             ->get();
@@ -191,10 +191,10 @@ new #[Layout('layouts.app', ['title' => 'Tableau de bord', 'subtitle' => 'Votre 
                         <li class="flex flex-wrap items-start gap-3 px-4 py-3.5 sm:px-5">
                             <div class="w-20 shrink-0">
                                 <p class="text-sm font-semibold text-slate-900 dark:text-white">
-                                    {{ $appointment->scheduled_at->format('H:i') }}
+                                    {{ $appointment->scheduled_at?->format('H:i') ?? '—' }}
                                 </p>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">
-                                    {{ $appointment->duration_minutes }} min
+                                    {{ $appointment->durationLabel() }}
                                 </p>
                             </div>
 
@@ -222,10 +222,10 @@ new #[Layout('layouts.app', ['title' => 'Tableau de bord', 'subtitle' => 'Votre 
                                             — {{ $appointment->siteLocation() }}
                                         @endif
                                     </span>
-                                    @if ($appointment->technician)
+                                    @if ($appointment->technicianLabel() !== 'Non assigné')
                                         <span class="inline-flex items-center gap-1">
                                             <x-icon name="user" class="h-3.5 w-3.5" />
-                                            {{ $appointment->technician->name }}
+                                            {{ $appointment->technicianLabel() }}
                                         </span>
                                     @endif
                                     @if ($appointment->client?->phone)
@@ -287,10 +287,10 @@ new #[Layout('layouts.app', ['title' => 'Tableau de bord', 'subtitle' => 'Votre 
                         <li class="flex items-start gap-3 px-4 py-3">
                             <span class="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg bg-slate-100 text-center leading-none dark:bg-slate-800">
                                 <span class="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400">
-                                    {{ $appointment->scheduled_at->translatedFormat('M') }}
+                                    {{ $appointment->scheduled_at?->translatedFormat('M') ?? '—' }}
                                 </span>
                                 <span class="text-sm font-bold text-slate-900 dark:text-white">
-                                    {{ $appointment->scheduled_at->format('d') }}
+                                    {{ $appointment->scheduled_at?->format('d') ?? '—' }}
                                 </span>
                             </span>
 
@@ -303,7 +303,7 @@ new #[Layout('layouts.app', ['title' => 'Tableau de bord', 'subtitle' => 'Votre 
                                     {{ $appointment->client?->name ?? 'Client supprimé' }}
                                 </a>
                                 <span class="mt-0.5 block truncate text-xs text-slate-500 dark:text-slate-400">
-                                    {{ $appointment->scheduled_at->format('H:i') }} · {{ $appointment->type->label() }}
+                                    {{ $appointment->timeRange() }} · {{ $appointment->type->label() }}
                                 </span>
                             </span>
 

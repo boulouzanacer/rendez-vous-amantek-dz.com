@@ -97,7 +97,7 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
 
         $appointments = Appointment::query()
             ->between($start, $end)
-            ->with(['client', 'technician'])
+            ->with(['client', 'technician', 'technicians'])
             ->forTechnician($this->technicianId)
             ->orderBy('scheduled_at')
             ->get();
@@ -115,7 +115,7 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
             'periodEnd' => $end,
             'anchorDate' => $anchor,
             'appointments' => $appointments,
-            'appointmentsByDay' => $appointments->groupBy(fn (Appointment $appointment): string => $appointment->scheduled_at->toDateString()),
+            'appointmentsByDay' => $appointments->groupBy(fn (Appointment $appointment): string => $appointment->scheduled_at?->toDateString() ?? 'non-planifie'),
             'days' => $days,
             'technicians' => User::query()->technicians()->active()->orderBy('name')->get(),
         ];
@@ -235,9 +235,9 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
                                         'bg-brand-100 text-brand-800 hover:bg-brand-200 dark:bg-brand-900 dark:text-brand-100' => $appointment->status->isOpen(),
                                         'bg-slate-100 text-slate-500 line-through hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400' => $appointment->status->isClosed(),
                                     ])
-                                    title="{{ $appointment->scheduled_at->format('H:i') }} · {{ $appointment->client?->name }} · {{ $appointment->type->label() }}"
+                                    title="{{ $appointment->timeLabel() }} · {{ $appointment->client?->name }} · {{ $appointment->type->label() }}"
                                 >
-                                    <span class="font-semibold">{{ $appointment->scheduled_at->format('H:i') }}</span>
+                                    <span class="font-semibold">{{ $appointment->timeLabel() }}</span>
                                     {{ $appointment->client?->name ?? 'Client supprimé' }}
                                 </a>
                             @endforeach
@@ -297,7 +297,7 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
                                 class="block rounded-lg border border-slate-200 px-2 py-1.5 transition hover:border-brand-300 hover:shadow-sm dark:border-slate-700"
                             >
                                 <p class="text-xs font-semibold text-slate-900 dark:text-white">
-                                    {{ $appointment->scheduled_at->format('H:i') }}
+                                    {{ $appointment->timeLabel() }}
                                 </p>
                                 <p class="truncate text-xs text-slate-600 dark:text-slate-300">
                                     {{ $appointment->client?->name ?? 'Client supprimé' }}
@@ -339,7 +339,7 @@ new #[Layout('layouts.app', ['title' => 'Agenda', 'subtitle' => 'Planifiez et su
                         <li class="flex flex-wrap items-start gap-4 px-4 py-4 sm:px-5">
                             <div class="w-24 shrink-0">
                                 <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $appointment->timeRange() }}</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ $appointment->duration_minutes }} min</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ $appointment->durationLabel() }}</p>
                             </div>
 
                             <div class="min-w-0 flex-1 space-y-1.5">

@@ -130,17 +130,17 @@ new #[Layout('layouts.app', ['title' => 'Fiche rendez-vous', 'subtitle' => 'Dét
                         <div>
                             <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Date et heure</dt>
                             <dd class="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
-                                {{ $appointment->scheduled_at->translatedFormat('l d F Y') }}
+                                {{ $appointment->longDateLabel() }}
                             </dd>
                             <dd class="text-sm text-slate-600 dark:text-slate-300">
-                                {{ $appointment->timeRange() }} · {{ $appointment->duration_minutes }} min
+                                {{ $appointment->timeRange() }} · {{ $appointment->durationLabel() }}
                             </dd>
                         </div>
 
                         <div>
-                            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Technicien</dt>
+                            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Techniciens</dt>
                             <dd class="mt-1 text-sm text-slate-800 dark:text-slate-100">
-                                {{ $appointment->technician?->name ?? 'Non assigné' }}
+                                {{ $appointment->technicianLabel() }}
                             </dd>
                         </div>
 

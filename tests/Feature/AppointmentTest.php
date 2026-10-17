@@ -81,6 +81,120 @@ test('la création échoue sans client sélectionné', function () {
     expect(Appointment::query()->count())->toBe(0);
 });
 
+test('un rendez-vous peut être créé sans heure fixée', function () {
+    $user = User::factory()->create();
+    $client = Client::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test('appointments.form')
+        ->set('clientId', (string) $client->id)
+        ->set('type', 'complement')
+        ->set('timeNotFixed', true)
+        ->set('scheduledDate', '')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $appointment = Appointment::query()->firstOrFail();
+
+    expect($appointment->scheduled_at)->toBeNull()
+        ->and($appointment->time_not_fixed)->toBeTrue()
+        ->and($appointment->type->value)->toBe('complement')
+        ->and($appointment->timeRange())->toBe('Heure à fixer')
+        ->and($appointment->durationLabel())->toBe('Durée à définir');
+});
+
+test('un rendez-vous ouvert conserve une date sans durée fixée', function () {
+    $user = User::factory()->create();
+    $client = Client::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test('appointments.form')
+        ->set('clientId', (string) $client->id)
+        ->set('scheduledDate', '2026-11-05')
+        ->set('scheduledTime', '08:30')
+        ->set('openEnded', true)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $appointment = Appointment::query()->firstOrFail();
+
+    expect($appointment->open_ended)->toBeTrue()
+        ->and($appointment->scheduled_at->format('Y-m-d H:i'))->toBe('2026-11-05 08:30')
+        ->and($appointment->timeRange())->toBe('08:30 – …')
+        ->and($appointment->durationLabel())->toBe('Durée ouverte');
+});
+
+test('plusieurs techniciens peuvent être assignés au même rendez-vous', function () {
+    $user = User::factory()->create();
+    $client = Client::factory()->create();
+    $first = User::factory()->technician()->create();
+    $second = User::factory()->technician()->create();
+
+    Livewire::actingAs($user)
+        ->test('appointments.form')
+        ->set('clientId', (string) $client->id)
+        ->set('scheduledDate', '2026-11-06')
+        ->set('scheduledTime', '10:00')
+        ->set('technicianIds', [(string) $first->id, (string) $second->id])
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $appointment = Appointment::query()->firstOrFail();
+
+    expect($appointment->technicians()->pluck('users.id')->all())
+        ->toEqualCanonicalizing([$first->id, $second->id])
+        ->and($appointment->user_id)->toBe($first->id);
+});
+
+test('cocher « pas encore décidé » n\'assigne aucun technicien', function () {
+    $user = User::factory()->create();
+    $client = Client::factory()->create();
+    $technician = User::factory()->technician()->create();
+
+    Livewire::actingAs($user)
+        ->test('appointments.form')
+        ->set('clientId', (string) $client->id)
+        ->set('scheduledDate', '2026-11-07')
+        ->set('scheduledTime', '11:00')
+        ->set('technicianIds', [(string) $technician->id])
+        ->set('technicianPending', true)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $appointment = Appointment::query()->firstOrFail();
+
+    expect($appointment->technician_pending)->toBeTrue()
+        ->and($appointment->user_id)->toBeNull()
+        ->and($appointment->technicians()->count())->toBe(0)
+        ->and($appointment->technicianLabel())->toBe('Pas encore décidé');
+});
+
+test('la date reste obligatoire quand l\'heure est fixée', function () {
+    $user = User::factory()->create();
+    $client = Client::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test('appointments.form')
+        ->set('clientId', (string) $client->id)
+        ->set('timeNotFixed', false)
+        ->set('scheduledDate', '')
+        ->call('save')
+        ->assertHasErrors(['scheduledDate' => 'required']);
+});
+
+test('un technicien assigné via plusieurs techniciens peut modifier le rendez-vous', function () {
+    $technician = User::factory()->technician()->create();
+    $appointment = Appointment::factory()->withTechnicians($technician)->create();
+
+    Livewire::actingAs($technician)
+        ->test('appointments.form', ['appointment' => $appointment])
+        ->set('status', 'en_cours')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($appointment->refresh()->status)->toBe(AppointmentStatus::EnCours);
+});
+
 test('un administrateur peut modifier un rendez-vous existant', function () {
     $user = User::factory()->create();
     $appointment = Appointment::factory()->create(['created_by' => $user->id]);

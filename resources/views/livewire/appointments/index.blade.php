@@ -70,7 +70,7 @@ new #[Layout('layouts.app', ['title' => 'Rendez-vous', 'subtitle' => 'Tous vos r
     public function with(): array
     {
         $query = Appointment::query()
-            ->with(['client', 'technician'])
+            ->with(['client', 'technician', 'technicians'])
             ->search($this->search)
             ->withStatus($this->status)
             ->withType($this->type)
@@ -218,16 +218,16 @@ new #[Layout('layouts.app', ['title' => 'Rendez-vous', 'subtitle' => 'Tous vos r
                     <div class="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                         <p class="flex items-center gap-1.5">
                             <x-icon name="clock" class="h-3.5 w-3.5 text-slate-400" />
-                            {{ $appointment->scheduled_at->translatedFormat('d M Y à H:i') }} · {{ $appointment->duration_minutes }} min
+                            {{ $appointment->dateLabel() }} · {{ $appointment->timeRange() }} · {{ $appointment->durationLabel() }}
                         </p>
                         <p class="flex items-center gap-1.5">
                             <x-icon name="map-pin" class="h-3.5 w-3.5 text-slate-400" />
                             {{ $appointment->siteAddress() }}
                         </p>
-                        @if ($appointment->technician)
+                        @if ($appointment->technicianLabel() !== 'Non assigné')
                             <p class="flex items-center gap-1.5">
                                 <x-icon name="user" class="h-3.5 w-3.5 text-slate-400" />
-                                {{ $appointment->technician->name }}
+                                {{ $appointment->technicianLabel() }}
                             </p>
                         @endif
                     </div>
@@ -285,7 +285,7 @@ new #[Layout('layouts.app', ['title' => 'Rendez-vous', 'subtitle' => 'Tous vos r
                                 </td>
                                 <td class="whitespace-nowrap">
                                     <span class="block font-medium text-slate-800 dark:text-slate-100">
-                                        {{ $appointment->scheduled_at->translatedFormat('d M Y') }}
+                                        {{ $appointment->dateLabel() }}
                                     </span>
                                     <span class="text-xs text-slate-500 dark:text-slate-400">
                                         {{ $appointment->timeRange() }}
@@ -304,7 +304,7 @@ new #[Layout('layouts.app', ['title' => 'Rendez-vous', 'subtitle' => 'Tous vos r
                                     @endif
                                 </td>
                                 <td><x-type-chip :type="$appointment->type" /></td>
-                                <td class="whitespace-nowrap">{{ $appointment->technician?->name ?? '—' }}</td>
+                                <td class="whitespace-nowrap">{{ $appointment->technicianLabel() }}</td>
                                 <td><x-status-badge :status="$appointment->status" /></td>
                                 <td>
                                     <div class="flex items-center justify-end gap-1">

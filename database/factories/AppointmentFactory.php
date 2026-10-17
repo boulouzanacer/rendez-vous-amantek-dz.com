@@ -31,6 +31,9 @@ class AppointmentFactory extends Factory
             'priority' => fake()->randomElement([Priority::Normale, Priority::Normale, Priority::Haute, Priority::Urgente, Priority::Basse]),
             'scheduled_at' => $scheduledAt,
             'duration_minutes' => fake()->randomElement([30, 60, 90, 120, 180]),
+            'time_not_fixed' => false,
+            'open_ended' => false,
+            'technician_pending' => false,
             'address' => null,
             'commune' => null,
             'wilaya' => null,
@@ -78,5 +81,36 @@ class AppointmentFactory extends Factory
     public function withStatus(AppointmentStatus $status): static
     {
         return $this->state(fn (array $attributes): array => ['status' => $status]);
+    }
+
+    public function withTechnicians(User ...$technicians): static
+    {
+        return $this->afterCreating(function (Appointment $appointment) use ($technicians): void {
+            $appointment->technicians()->sync(collect($technicians)->pluck('id')->all());
+        });
+    }
+
+    /**
+     * Rendez-vous dont la date et l'heure restent à définir.
+     */
+    public function timeNotFixed(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'time_not_fixed' => true,
+            'scheduled_at' => null,
+        ]);
+    }
+
+    public function openEnded(): static
+    {
+        return $this->state(fn (array $attributes): array => ['open_ended' => true]);
+    }
+
+    public function technicianPending(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'technician_pending' => true,
+            'user_id' => null,
+        ]);
     }
 }

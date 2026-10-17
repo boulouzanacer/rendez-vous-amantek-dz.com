@@ -31,7 +31,9 @@ class AppointmentPolicy
             return true;
         }
 
-        return $appointment->user_id === null || $appointment->user_id === $user->id;
+        return $appointment->user_id === null
+            || $appointment->user_id === $user->id
+            || $appointment->technicians()->whereKey($user->id)->exists();
     }
 
     public function delete(User $user, Appointment $appointment): bool

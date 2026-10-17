@@ -308,7 +308,7 @@ new #[Layout('layouts.app', ['title' => 'Devis', 'subtitle' => 'Composer une pro
                                 <option value="">— Aucun —</option>
                                 @foreach ($appointments as $appointment)
                                     <option value="{{ $appointment->id }}">
-                                        {{ $appointment->reference }} · {{ $appointment->scheduled_at->translatedFormat('d M Y') }}
+                                        {{ $appointment->reference }} · {{ $appointment->dateLabel() }}
                                     </option>
                                 @endforeach
                             </select>

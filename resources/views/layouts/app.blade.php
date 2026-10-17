@@ -234,7 +234,7 @@
                                                     {{ $appointment->client?->name ?? 'Client supprimé' }}
                                                 </p>
                                                 <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                                                    {{ $appointment->type->label() }} · prévu le {{ $appointment->scheduled_at->translatedFormat('d M à H:i') }}
+                                                    {{ $appointment->type->label() }} · prévu le {{ $appointment->dateLabel() }} à {{ $appointment->timeLabel() }}
                                                 </p>
                                             </a>
                                         @endforeach

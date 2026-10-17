@@ -7,6 +7,7 @@ enum AppointmentType: string
     case Visite = 'visite';
     case Devis = 'devis';
     case Installation = 'installation';
+    case ComplementTravaux = 'complement';
     case Maintenance = 'maintenance';
     case Sav = 'sav';
 
@@ -16,6 +17,7 @@ enum AppointmentType: string
             self::Visite => 'Visite technique',
             self::Devis => 'Établissement de devis',
             self::Installation => 'Installation',
+            self::ComplementTravaux => 'Complément de travaux',
             self::Maintenance => 'Maintenance',
             self::Sav => 'SAV / Dépannage',
         };
@@ -27,6 +29,7 @@ enum AppointmentType: string
             self::Visite => 'info',
             self::Devis => 'brand',
             self::Installation => 'success',
+            self::ComplementTravaux => 'neutral',
             self::Maintenance => 'warning',
             self::Sav => 'danger',
         };
@@ -38,6 +41,7 @@ enum AppointmentType: string
             self::Visite => 'search',
             self::Devis => 'file-text',
             self::Installation => 'wrench',
+            self::ComplementTravaux => 'clipboard',
             self::Maintenance => 'refresh',
             self::Sav => 'alert',
         };

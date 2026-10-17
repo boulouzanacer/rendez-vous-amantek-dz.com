@@ -169,7 +169,7 @@ new #[Layout('layouts.app', ['title' => 'Fiche client', 'subtitle' => 'Coordonn�
                                     {{ $appointment->reference }}
                                 </a>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">
-                                    {{ $appointment->scheduled_at->translatedFormat('d M Y à H:i') }} · {{ $appointment->type->label() }}
+                                    {{ $appointment->dateLabel() }} · {{ $appointment->timeRange() }} · {{ $appointment->type->label() }}
                                 </p>
                             </div>
                             <x-status-badge :status="$appointment->status" class="shrink-0" />
