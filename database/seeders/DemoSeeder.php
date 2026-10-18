@@ -4,11 +4,14 @@ namespace Database\Seeders;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\AppointmentType;
+use App\Enums\AuthorizationStatus;
 use App\Enums\InstallationStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\Priority;
 use App\Enums\QuoteStatus;
 use App\Models\Appointment;
+use App\Models\Authorization;
+use App\Models\Camera;
 use App\Models\Client;
 use App\Models\Installation;
 use App\Models\InstallationItem;
@@ -37,6 +40,76 @@ class DemoSeeder extends Seeder
 
         $this->seedAgenda($clients, $technicians, $manager);
         $this->seedCommercialActivity($clients, $technicians, $manager);
+        $this->seedCameras();
+        $this->seedAuthorizations($clients, $manager);
+    }
+
+    /**
+     * Catalogue de références de caméras.
+     */
+    private function seedCameras(): void
+    {
+        $catalogue = [
+            ['reference' => 'DS-2CD1023G0-I', 'brand' => 'Hikvision'],
+            ['reference' => 'DS-2CD2143G2-I', 'brand' => 'Hikvision'],
+            ['reference' => 'DS-2CD2T47G2-L', 'brand' => 'Hikvision'],
+            ['reference' => 'IPC-HDW2230T-AS', 'brand' => 'Dahua'],
+            ['reference' => 'IPC-HFW2431T-ZS', 'brand' => 'Dahua'],
+            ['reference' => 'C3TN', 'brand' => 'EZVIZ'],
+            ['reference' => 'IPC2124LE-ADF28KM', 'brand' => 'Uniview'],
+            ['reference' => 'VIGI C340', 'brand' => 'TP-Link'],
+        ];
+
+        foreach ($catalogue as $camera) {
+            Camera::query()->firstOrCreate(
+                ['reference' => $camera['reference']],
+                ['brand' => $camera['brand'], 'is_active' => true],
+            );
+        }
+    }
+
+    /**
+     * Dossiers d'autorisation rattachés aux clients.
+     *
+     * @param  Collection<int, Client>  $clients
+     */
+    private function seedAuthorizations(Collection $clients, ?User $manager): void
+    {
+        $references = Camera::query()->pluck('reference')->all();
+
+        if ($references === []) {
+            return;
+        }
+
+        $statuses = [
+            AuthorizationStatus::EnPreparation,
+            AuthorizationStatus::PremierDossierDepose,
+            AuthorizationStatus::AcquisitionRetenue,
+            AuthorizationStatus::DeuxiemeDossierDepose,
+            AuthorizationStatus::AutorisationRetenue,
+            AuthorizationStatus::Refuse,
+        ];
+
+        foreach ($clients->take(8)->values() as $index => $client) {
+            $hasInside = $index % 3 !== 2;
+            $hasOutside = $index % 2 === 0;
+
+            Authorization::factory()
+                ->forClient($client)
+                ->create([
+                    'status' => $statuses[$index % count($statuses)],
+                    'has_inside_cameras' => $hasInside,
+                    'has_outside_cameras' => $hasOutside,
+                    'inside_cameras' => $hasInside
+                        ? [['reference' => $references[$index % count($references)], 'quantity' => random_int(2, 8)]]
+                        : null,
+                    'outside_cameras' => $hasOutside
+                        ? [['reference' => $references[($index + 3) % count($references)], 'quantity' => random_int(1, 4)]]
+                        : null,
+                    'notes' => $index % 4 === 0 ? 'Dossier déposé auprès de la sûreté de wilaya.' : null,
+                    'created_by' => $manager?->id,
+                ]);
+        }
     }
 
     /**

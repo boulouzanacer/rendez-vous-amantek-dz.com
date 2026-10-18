@@ -49,9 +49,16 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Volt::route('paiements/nouveau', 'payments.form')->name('payments.create');
     Volt::route('paiements/{payment}/modifier', 'payments.form')->name('payments.edit');
 
+    // Autorisations
+    Volt::route('autorisations', 'authorizations.index')->name('authorizations.index');
+    Volt::route('autorisations/nouvelle', 'authorizations.form')->name('authorizations.create');
+    Volt::route('autorisations/{authorization}', 'authorizations.show')->name('authorizations.show');
+    Volt::route('autorisations/{authorization}/modifier', 'authorizations.form')->name('authorizations.edit');
+
     // Analyse et configuration
     Volt::route('rapports', 'reports')->name('reports.index');
     Volt::route('parametres', 'settings')->name('settings');
+    Volt::route('parametres/cameras', 'cameras.index')->name('settings.cameras');
 
     Route::view('profile', 'profile')->name('profile');
 });

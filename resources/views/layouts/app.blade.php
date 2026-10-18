@@ -17,6 +17,7 @@
                 ['label' => 'Clients', 'route' => 'clients.index', 'icon' => 'users'],
                 ['label' => 'Devis', 'route' => 'quotes.index', 'icon' => 'file-text'],
                 ['label' => 'Interventions', 'route' => 'installations.index', 'icon' => 'wrench'],
+                ['label' => 'Autorisations', 'route' => 'authorizations.index', 'icon' => 'clipboard'],
                 ['label' => 'Paiements', 'route' => 'payments.index', 'icon' => 'wallet'],
             ],
         ],

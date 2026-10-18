@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Appointment;
+use App\Models\Authorization;
+use App\Models\Camera;
 use App\Models\Client;
 use App\Models\Installation;
 use App\Models\Payment;
@@ -25,6 +27,11 @@ test('toutes les pages de l\'application se chargent pour un administrateur', fu
 
     $installation = Installation::factory()->forClient($client)->create(['quote_id' => $quote->id]);
     $payment = Payment::factory()->create(['client_id' => $client->id, 'quote_id' => $quote->id, 'paid_at' => now()]);
+    $authorization = Authorization::factory()
+        ->forClient($client)
+        ->interieures()
+        ->create(['created_by' => $admin->id]);
+    Camera::factory()->create();
 
     $pages = [
         route('dashboard'),
@@ -49,8 +56,13 @@ test('toutes les pages de l\'application se chargent pour un administrateur', fu
         route('payments.index'),
         route('payments.create'),
         route('payments.edit', $payment),
+        route('authorizations.index'),
+        route('authorizations.create'),
+        route('authorizations.show', $authorization),
+        route('authorizations.edit', $authorization),
         route('reports.index'),
         route('settings'),
+        route('settings.cameras'),
         route('profile'),
     ];
 

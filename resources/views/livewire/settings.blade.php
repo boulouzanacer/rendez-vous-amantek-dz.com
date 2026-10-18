@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Appointment;
+use App\Models\Camera;
 use App\Models\Client;
 use App\Models\Installation;
 use App\Models\Payment;
@@ -33,6 +34,7 @@ new #[Layout('layouts.app', ['title' => 'Paramètres', 'subtitle' => 'Configurat
                 ? User::query()->orderBy('name')->get()
                 : User::query()->whereKey($user->id)->get(),
             'canManageUsers' => $user->isAdmin(),
+            'cameraCount' => Camera::query()->count(),
             'counts' => [
                 'clients' => Client::query()->count(),
                 'appointments' => Appointment::query()->count(),
@@ -152,6 +154,29 @@ new #[Layout('layouts.app', ['title' => 'Paramètres', 'subtitle' => 'Configurat
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ $item['label'] }}</p>
                 </div>
             @endforeach
+        </div>
+    </div>
+
+    {{-- Catalogue --}}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="section-title">Catalogue</h3>
+        </div>
+        <div class="card-body">
+            <a
+                href="{{ route('settings.cameras') }}"
+                wire:navigate
+                class="flex items-center gap-3 rounded-lg border border-slate-200 p-3 transition hover:border-brand-300 hover:bg-brand-50/50 dark:border-slate-800 dark:hover:border-brand-800 dark:hover:bg-brand-950/30"
+            >
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                    <x-icon name="camera" class="h-4 w-4" />
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-semibold text-slate-800 dark:text-slate-100">Caméras</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-400">{{ $cameraCount }} référence(s) au catalogue</span>
+                </span>
+                <x-icon name="chevron-right" class="h-4 w-4 shrink-0 text-slate-400" />
+            </a>
         </div>
     </div>
 
