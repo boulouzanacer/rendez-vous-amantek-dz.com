@@ -368,13 +368,21 @@ new #[Layout('layouts.app', ['title' => 'Autorisations', 'subtitle' => 'Dossier 
                     </label>
 
                     @if ($hasInside)
-                        <div class="mt-3 space-y-2">
+                        <div class="mt-3 space-y-3">
                             @foreach ($insideItems as $index => $item)
-                                <div class="grid gap-2 sm:grid-cols-12" wire:key="inside-item-{{ $index }}">
-                                    <div class="sm:col-span-8">
+                                <div class="rounded-lg border border-slate-200 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40" wire:key="inside-item-{{ $index }}">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Caméra intérieure {{ $index + 1 }}</p>
+                                        <button type="button" wire:click="removeInsideItem({{ $index }})" class="btn-icon text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50" title="Retirer cette référence">
+                                            <x-icon name="trash" class="h-4 w-4" />
+                                            <span class="sr-only">Retirer</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-2">
                                         <label class="label" for="inside-ref-{{ $index }}">Référence de la caméra</label>
-                                        <select id="inside-ref-{{ $index }}" wire:model="insideItems.{{ $index }}.reference" class="input">
-                                            <option value="">— Sélectionner —</option>
+                                        <select id="inside-ref-{{ $index }}" wire:model="insideItems.{{ $index }}.reference" class="input w-full py-2.5">
+                                            <option value="">— Sélectionner une référence dans le catalogue —</option>
                                             @foreach ($cameras as $camera)
                                                 <option value="{{ $camera->reference }}">{{ $camera->label() }}</option>
                                             @endforeach
@@ -382,17 +390,10 @@ new #[Layout('layouts.app', ['title' => 'Autorisations', 'subtitle' => 'Dossier 
                                         @error("insideItems.{$index}.reference") <p class="error">{{ $message }}</p> @enderror
                                     </div>
 
-                                    <div class="sm:col-span-3">
-                                        <label class="label" for="inside-qty-{{ $index }}">Nombre</label>
-                                        <input id="inside-qty-{{ $index }}" type="number" min="1" wire:model="insideItems.{{ $index }}.quantity" class="input">
+                                    <div class="mt-3">
+                                        <label class="label" for="inside-qty-{{ $index }}">Nombre de caméras de cette référence</label>
+                                        <input id="inside-qty-{{ $index }}" type="number" min="1" wire:model="insideItems.{{ $index }}.quantity" class="input w-full py-2.5 sm:max-w-32">
                                         @error("insideItems.{$index}.quantity") <p class="error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                    <div class="flex items-end sm:col-span-1">
-                                        <button type="button" wire:click="removeInsideItem({{ $index }})" class="btn-icon text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50" title="Retirer">
-                                            <x-icon name="trash" class="h-4 w-4" />
-                                            <span class="sr-only">Retirer</span>
-                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -415,13 +416,21 @@ new #[Layout('layouts.app', ['title' => 'Autorisations', 'subtitle' => 'Dossier 
                     </label>
 
                     @if ($hasOutside)
-                        <div class="mt-3 space-y-2">
+                        <div class="mt-3 space-y-3">
                             @foreach ($outsideItems as $index => $item)
-                                <div class="grid gap-2 sm:grid-cols-12" wire:key="outside-item-{{ $index }}">
-                                    <div class="sm:col-span-8">
+                                <div class="rounded-lg border border-slate-200 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-900/40" wire:key="outside-item-{{ $index }}">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Caméra extérieure {{ $index + 1 }}</p>
+                                        <button type="button" wire:click="removeOutsideItem({{ $index }})" class="btn-icon text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50" title="Retirer cette référence">
+                                            <x-icon name="trash" class="h-4 w-4" />
+                                            <span class="sr-only">Retirer</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-2">
                                         <label class="label" for="outside-ref-{{ $index }}">Référence de la caméra</label>
-                                        <select id="outside-ref-{{ $index }}" wire:model="outsideItems.{{ $index }}.reference" class="input">
-                                            <option value="">— Sélectionner —</option>
+                                        <select id="outside-ref-{{ $index }}" wire:model="outsideItems.{{ $index }}.reference" class="input w-full py-2.5">
+                                            <option value="">— Sélectionner une référence dans le catalogue —</option>
                                             @foreach ($cameras as $camera)
                                                 <option value="{{ $camera->reference }}">{{ $camera->label() }}</option>
                                             @endforeach
@@ -429,17 +438,10 @@ new #[Layout('layouts.app', ['title' => 'Autorisations', 'subtitle' => 'Dossier 
                                         @error("outsideItems.{$index}.reference") <p class="error">{{ $message }}</p> @enderror
                                     </div>
 
-                                    <div class="sm:col-span-3">
-                                        <label class="label" for="outside-qty-{{ $index }}">Nombre</label>
-                                        <input id="outside-qty-{{ $index }}" type="number" min="1" wire:model="outsideItems.{{ $index }}.quantity" class="input">
+                                    <div class="mt-3">
+                                        <label class="label" for="outside-qty-{{ $index }}">Nombre de caméras de cette référence</label>
+                                        <input id="outside-qty-{{ $index }}" type="number" min="1" wire:model="outsideItems.{{ $index }}.quantity" class="input w-full py-2.5 sm:max-w-32">
                                         @error("outsideItems.{$index}.quantity") <p class="error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                    <div class="flex items-end sm:col-span-1">
-                                        <button type="button" wire:click="removeOutsideItem({{ $index }})" class="btn-icon text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50" title="Retirer">
-                                            <x-icon name="trash" class="h-4 w-4" />
-                                            <span class="sr-only">Retirer</span>
-                                        </button>
                                     </div>
                                 </div>
                             @endforeach
